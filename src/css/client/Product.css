@@ -1,0 +1,33 @@
+.tabFilter {
+  display: none;
+}
+.tabFilter.active {
+  background-color: #ffffff;
+  display: block;
+  min-height: 25vh;
+  position: absolute;
+  min-width: 100%;
+  padding-top: 20px;
+  padding-bottom: 30px;
+}
+.ctnCardHov {
+  background-color: black;
+}
+.ctnCardHov :hover {
+  transition: all 0.75s;
+  opacity: 0.55;
+}
+.sectionHover:hover {
+  transition: all 0.35s;
+  background-color: rgba(0, 0, 0, 0.068);
+}
+.ant-btn:hover {
+  transition: "all 0.55s !important";
+  background-color: rgb(0, 0, 0);
+  border-color: rgb(255, 255, 255) !important;
+  color: rgb(255, 255, 255) !important;
+}
+.detailsize > div:hover {
+  transition: all 0.35s;
+  background-color: rgba(0, 0, 0, 0.068);
+}
