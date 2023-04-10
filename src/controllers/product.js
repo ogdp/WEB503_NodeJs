@@ -27,9 +27,52 @@ const productSchema = joi.object({
   }),
 });
 
+// export const getAll = async (req, res) => {
+//   const {
+//     _sort = "createAt",
+//     _order = "asc",
+//     _limit = 10,
+//     _page = 1,
+//   } = req.query;
+//   const options = {
+//     page: _page,
+//     limit: _limit,
+//     sort: {
+//       [_sort]: _order === "desc" ? -1 : 1,
+//     },
+//   };
+//   try {
+//     const products = await Product.paginate({}, options);
+//     if (products.length === 0) {
+//       return res.json({
+//         message: "Không có sản phẩm nào",
+//       });
+//     }
+//     return res.json(products);
+//   } catch (error) {
+//     return res.status(400).json({
+//       message: error,
+//     });
+//   }
+// };
+
 export const getAll = async (req, res) => {
+  const {
+    _page = 1,
+    _order = "asc",
+    _limit = 1000 * 1000000,
+    _sort = "createAt",
+  } = req.query;
+  const options = {
+    page: _page,
+    limit: _limit,
+    sort: {
+      [_sort]: _order == "desc" ? -1 : 1,
+    },
+  };
   try {
-    const products = await Product.find();
+    const products = await Product.paginate({}, options);
+    // const products = await Product.find();
     if (products.length === 0) {
       return res.json({
         message: "Không có sản phẩm nào",
