@@ -293,7 +293,7 @@ const ProductUpdate = (props: IProps) => {
       try {
         const response = await props.updateProduct(product);
         LoaddingRender(false);
-        await message.success(response.data.message);
+        await message.success(response.data.message, 1.5);
         navigate("/admin/products");
       } catch (error) {
         console.log(error);

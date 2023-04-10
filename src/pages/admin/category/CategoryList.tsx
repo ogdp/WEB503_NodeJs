@@ -110,14 +110,21 @@ const CategoryList = (props: IProps) => {
   const getRowKey = (record: any) => record._id;
   const handleSearch = async (value: string) => {
     const { data }: { data: ICategory[] } = await props.getAllCategory();
-    const filteredData = await data?.filter((p) => p.name == value);
+    function searchKeyword(keyword: string, array: any) {
+      const result = [];
+      for (let i = 0; i < array.length; i++) {
+        if (array[i].name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1) {
+          result.push(array[i]);
+        }
+      }
+      return result;
+    }
+    const filteredData = searchKeyword(value, data);
     if (filteredData.length > 0) {
-      // console.log("Tìm thấy", filteredData);
       setCategories(filteredData);
     } else {
       await setCategories(data);
       message.warning("Không tìm thấy mục");
-      // console.log("Không tìm thấy", data);
     }
   };
   return (

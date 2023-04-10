@@ -12,7 +12,7 @@ import {
 const { confirm } = Modal;
 
 interface IProps {
-  getProduct: () => any;
+  getProduct: (paginite: any) => any;
   remove: (id: string) => any;
   getCategory: () => any;
 }
@@ -25,9 +25,9 @@ const ProductList = (props: IProps) => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await props.getProduct();
+        const res = await props.getProduct(null);
         setCheckRong(res.data);
-        setProducts(res.data);
+        setProducts(res.data.docs);
         setCategories((await props.getCategory()).data);
       } catch (error) {
         console.log(error);
@@ -174,8 +174,8 @@ const ProductList = (props: IProps) => {
           try {
             const response = await props.remove(id);
             setProducts(products?.filter((p) => p._id !== product._id));
-            const { data }: { data: IProduct[] } = await props.getProduct();
-            setProducts(data);
+            const { data } = await props.getProduct(null);
+            setProducts(data.docs);
             message.success(response.data.message);
           } catch (error) {}
         })();
@@ -183,8 +183,7 @@ const ProductList = (props: IProps) => {
     });
   };
   const handleSearch = async (value: string) => {
-    const { data }: { data: IProduct[] } = await props.getProduct();
-
+    const { data }: { data: any } = await props.getProduct(null);
     // --
     function searchKeyword(keyword: string, array: any) {
       const result = [];
@@ -195,14 +194,14 @@ const ProductList = (props: IProps) => {
       }
       return result;
     }
-    const filteredData = searchKeyword(value, data);
+    const filteredData = searchKeyword(value, data.docs);
     // --
     // const filteredData = await data?.filter((p) => p.name == value);
     if (filteredData.length > 0) {
       // console.log("Tìm thấy", filteredData);
       setProducts(filteredData);
     } else {
-      await setProducts(data);
+      await setProducts(data.docs);
       message.warning("Không tìm thấy sản phẩm");
       // console.log("Không tìm thấy", data);
     }

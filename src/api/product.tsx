@@ -1,8 +1,19 @@
 import { ICategory, IProduct, IProductNotId } from "../types/product";
 import { instance, instanceCRUD } from "./instance";
 
-export const getAllProduct = () => {
-  return instance.get("/products");
+export const getAllProduct = async (
+  paginite: { limit: number; page: number } | null
+) => {
+  const { data } = await instance.get("/products/");
+  if (paginite !== null) {
+    const { limit, page } = paginite;
+    const lengthData = Math.floor(Number(data.length / limit) + 1);
+    const setPaginite = `?_limit=${limit}&_page=${
+      page > lengthData ? lengthData : page
+    }`;
+    return instance.get("/products/" + setPaginite);
+  }
+  return instance.get("/products" + (paginite !== null ? paginite : ""));
 };
 export const getOneProduct = (id: string) => {
   return instance.get("/products/" + id);

@@ -1,27 +1,45 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { ICategory } from "../../../types/product";
-import { getAllCategory } from "../../../api/product";
-import { FilterOutlined } from "@ant-design/icons";
+import { getAllCategory, getAllProduct } from "../../../api/product";
+import {
+  CaretLeftOutlined,
+  CaretRightOutlined,
+  FilterOutlined,
+} from "@ant-design/icons";
 import "../../../css/client/Product.css";
 import { Button, Col, Row } from "antd";
+import { Link, useNavigate, useParams } from "react-router-dom";
 interface IProps {
   onChange: (id: string) => any;
+  onChangePage: (id: number) => any;
 }
 
 function ProductFilter(props: IProps) {
+  const navigate = useNavigate();
+  const params = useParams();
+  const id = Number(params.id);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [tabFilter, setTabFilter] = useState(false);
+  const [pageCount, setPageCount] = useState<any>();
   useEffect(() => {
     (async () => {
       try {
         const { data } = await getAllCategory();
         setCategories(data);
+        const res = await getAllProduct(null);
+        setPageCount(res.data);
+        setCategories(data);
       } catch (error) {}
     })();
-  }, []);
+  }, [id]);
   if (!categories) {
     return null;
+  }
+  let totalPage: Number = 0;
+  let presentPage: Number = id ? id : 1;
+  if (pageCount !== undefined) {
+    totalPage = Number(Math.floor(pageCount.totalDocs / 10) + 1);
   }
   // console.log("Mừng quá có dữ liệu rồi");
   return (
@@ -33,7 +51,52 @@ function ProductFilter(props: IProps) {
         >
           <FilterOutlined /> Lọc sản phẩm
         </div>
-        <div style={{ padding: "0 35px" }}>2 | 4</div>
+        <div style={{ padding: "0 35px" }}>
+          <span
+            style={{ padding: "2px 5px", color: "#666" }}
+            onClick={() => {
+              if (!id) {
+                navigate("/products/men/1");
+              } else {
+                presentPage = id - 1;
+                presentPage =
+                  presentPage == 0 ? Number(presentPage) + 1 : presentPage;
+                props.onChangePage(Number(presentPage));
+                navigate("/products/men/" + presentPage);
+              }
+            }}
+          >
+            <CaretLeftOutlined />
+          </span>
+          {id ? id : 1} / {Number(totalPage)}
+          {id ? (
+            <span
+              style={{ padding: "2px 5px", color: "#666" }}
+              onClick={() => {
+                presentPage = id + 1;
+                presentPage =
+                  presentPage > totalPage
+                    ? Number(presentPage) - 1
+                    : presentPage;
+                props.onChangePage(Number(presentPage));
+                navigate("/products/men/" + presentPage);
+                props.onChangePage(Number(presentPage));
+              }}
+            >
+              <CaretRightOutlined />
+            </span>
+          ) : (
+            <span
+              style={{ padding: "2px 5px", color: "#666" }}
+              onClick={() => {
+                navigate("/products/men/2");
+                props.onChangePage(Number(2));
+              }}
+            >
+              <CaretRightOutlined />
+            </span>
+          )}
+        </div>
       </div>
       <div
         className={`tabFilter${tabFilter ? " active" : ""}`}

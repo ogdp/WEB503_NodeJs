@@ -46,6 +46,10 @@ function App() {
           element={<ClientProductListPage getAllProduct={getAllProduct} />}
         />
         <Route
+          path="products/men/:id"
+          element={<ClientProductListPage getAllProduct={getAllProduct} />}
+        />
+        <Route
           path="products/:id/details"
           element={
             <ClientProductDetailsPage

@@ -249,8 +249,7 @@ export default function ProductUpdate(props: IProps) {
       product.price = Number(product.price);
       setProducts([...products, product]);
       const cc = await props.createProduct(product);
-      console.log(cc);
-      message.success("Thêm sản phẩm thành công");
+      message.success("Thêm sản phẩm thành công", 1.5);
       LoaddingRender(false);
     } catch (error) {
       // message.error(error.message);

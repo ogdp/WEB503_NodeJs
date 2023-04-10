@@ -4,36 +4,66 @@ import React, { useEffect, useState } from "react";
 import CardProduct from "./Card";
 import { IProduct } from "../../../types/product";
 import ProductFilter from "./ProductFilter";
+import { useParams } from "react-router-dom";
 interface IProps {
-  getAllProduct: () => any;
+  getAllProduct: (paginite: { limit: number; page: number } | null) => any;
 }
 const ProductList = (props: IProps) => {
+  const { id } = useParams();
   const [products, setProducts] = useState<IProduct[]>([]);
   const [filter, setFilter] = useState<IProduct[]>([]);
   useEffect(() => {
     (async () => {
-      const { data } = await props.getAllProduct();
-      setProducts(data);
-      setFilter(data);
+      const check =
+        id !== undefined
+          ? { limit: Number(10), page: Number(id) }
+          : { limit: Number(10), page: Number(1) };
+      const { data } = await props.getAllProduct(check);
+      const defaultDataPro = await props.getAllProduct(null);
+      setProducts(data.docs);
+      setFilter(defaultDataPro.data.docs);
     })();
   }, []);
 
   function onChange(id: string) {
     (async () => {
       try {
-        const { data } = await props.getAllProduct();
-        setFilter(data);
+        const { data } = await props.getAllProduct(null);
+        setFilter(data.docs);
         if (id == "0") {
-          setProducts(data);
-          message.success("Tất cả sản phẩm");
+          const { data } = await props.getAllProduct({
+            limit: Number(10),
+            page: Number(1),
+          });
+          setProducts(data.docs);
+          message.success("Tất cả sản phẩm", 1.5);
           return;
         }
         if (filter.filter((item) => item.categoryId == id).length === 0) {
-          message.error("Danh mục sản phẩm rỗng");
+          message.error("Danh mục sản phẩm rỗng", 1.5);
           return;
         }
-        message.success("Lọc sản phẩm thành công");
+        message.success("Lọc sản phẩm thành công", 1.5);
         setProducts(filter.filter((item) => item.categoryId == id));
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }
+
+  function onChangePage(id: number) {
+    (async () => {
+      try {
+        const { data } = await props.getAllProduct({
+          limit: Number(10),
+          page: Number(id),
+        });
+        if (data.docs.length <= 0) {
+          message.warning("Không tìm thấy trang", 1.5);
+          return;
+        }
+        setProducts(data.docs);
+        return;
       } catch (error) {
         console.log(error);
       }
@@ -60,7 +90,7 @@ const ProductList = (props: IProps) => {
             margin: "3px 50px",
           }}
         >
-          <ProductFilter onChange={onChange} />
+          <ProductFilter onChange={onChange} onChangePage={onChangePage} />
         </span>
       </div>
       <div style={{ width: "100%", minHeight: "100vh" }}>
